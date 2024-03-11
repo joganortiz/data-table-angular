@@ -1,0 +1,26 @@
+table > thead tr {
+    background-color: #1b2e4b !important;
+}
+
+table > thead tr th {
+    color: aliceblue !important;
+    font-weight: 500;
+}
+
+.empty-data div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}
+
+.empty-data {
+    color: gray !important;
+    font-size: 20px;
+}
+
+.empty-data svg {
+    color: gray;
+    width: 20px;
+    height: 20px;
+}

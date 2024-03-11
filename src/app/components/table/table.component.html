@@ -1,0 +1,131 @@
+<br />
+<div class="dataTables_wrapper container-fluid dt-bootstrap4 no-footer">
+    @if (loading()) {
+        <div style="position: absolute; background: #eeeeee5e; width: 100%; height: 100%; left: 0; top: 0; z-index: 5;display: flex; justify-content: center; align-items: center;">
+            <span class="spin">
+                <svg style=" width: 59px; height: 59px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-refresh-cw"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/>
+                </svg>
+            </span>
+        </div>
+    }
+    @if(!hiddeLengthMenu() || !hiddeSearch()) {
+        <div class="dt--top-section">
+            <div class="row">
+                <div class="col-12 col-sm-6 d-flex justify-content-sm-start justify-content-center">
+                    @if(!hiddeLengthMenu()) {
+                        <div class="dataTables_length" id="zero-config_length">
+                            <label>Results :  
+                                <select #selectMenu class="form-control form-control-sm" (change)="changeLengthMenuRows(selectMenu.value)">
+                                    @for (item of lengthMenuRows(); track $index) {
+                                        <option [value]="item" [selected]="item == rowData()">{{item}}</option>
+                                    }
+                                </select>
+                            </label>
+                        </div>
+                    }
+                </div>
+                <div class="col-12 col-sm-6 d-flex justify-content-sm-end justify-content-center mt-sm-0 mt-3">
+                    @if(!hiddeSearch()) {
+                        <div class="dataTables_filter">
+                            <label>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                </svg>
+                                <input #search type="text" class="form-control form-control-sm" placeholder="Search..." aria-controls="zero-config" (keyup)="changeSearch(search.value)">
+                            </label>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+    <div class="table-responsive" [style]="scrollY()? {maxHeight: scrollY(), overflow: 'auto'} : {}">
+        <table class="table table-hover table-bordered" style="width:100%">
+            <thead style="position: sticky; top: 0; z-index: 2">
+                <tr role="row">
+                    @for (item of header(); track $index) {
+                        <th [style]="item.aling ? {'text-align': item.aling} : {}">
+                            {{item.name}}
+                            @if (item.sorting) {
+                                <span (click)="changeOnSort(item.field, $index)">
+                                    @if(item.sort == "asc") {
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up-narrow-wide"><path d="m3 8 4-4 4 4"/><path d="M7 4v16"/><path d="M11 12h4"/><path d="M11 16h7"/><path d="M11 20h10"/></svg>
+                                    }@else if(item.sort == "desc"){
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-down-wide-narrow"><path d="m3 16 4 4 4-4"/><path d="M7 20V4"/><path d="M11 4h10"/><path d="M11 8h7"/><path d="M11 12h4"/></svg>
+                                    }@else {
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-down-up"><path d="m3 16 4 4 4-4"/><path d="M7 20V4"/><path d="m21 8-4-4-4 4"/><path d="M17 4v16"/></svg>
+                                    }
+                                </span>
+                            }
+                        </th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @for (valueData of bodyPage(); track $index) {
+                    <tr>
+                        @for (item of columns(); track $index) {
+                            <td>{{valueData[item.field]}}</td>
+                        }
+                    </tr>
+                } @empty {
+                    <tr>
+                        <td [attr.colspan]="columns().length" class="text-center empty-data">
+                            <div>
+                                No data 
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-frown">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <path d="M16 16s-1.5-2-4-2-4 2-4 2"/>
+                                    <line x1="9" x2="9.01" y1="9" y2="9"/>
+                                    <line x1="15" x2="15.01" y1="9" y2="9"/>
+                                </svg>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    @if(paginator()) {
+        <div class="dt--bottom-section d-sm-flex justify-content-sm-between text-center">
+            <div class="dt--pages-count  mb-sm-0 mb-3">
+                <div class="dataTables_info">
+                    {{textPage()}}
+                </div>
+            </div>
+            <div class="dt--pagination">
+                <div class="dataTables_paginate paging_simple_numbers">
+                    <ul class="pagination">
+                        <li [class]="'paginate_button page-item previous'+ ((page() <= 1) ? ' disabled' : '')" (click)="changePreviousPage()">
+                            <span tabindex="0" class="page-link">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left">
+                                    <path d="m12 19-7-7 7-7"/><path d="M19 12H5"/>
+                                </svg>
+                            </span>
+                        </li>
+                        @for (item of paginators(); track $index) {
+                            @if(item != '...') {
+                                <li [class]="'paginate_button page-item '+ ((page() == item) ? 'active' : '')" (click)="changePage(item)">
+                                    <span aria-controls="zero-config" tabindex="0" class="page-link" >
+                                        {{item}}
+                                    </span>
+                                </li>
+                            } @else {
+                                <li class="paginate_button page-item disabled" id="show-hide-col_ellipsis"><a href="#" aria-controls="show-hide-col" data-dt-idx="6" tabindex="0" class="page-link">…</a></li>
+                            }
+                        }
+                        <li [class]="'paginate_button page-item next'+ ((paginators().length <= 0 || page() >= maxPage()) ? ' disabled' : '')" (click)="changeNextPage()">
+                            <span tabindex="0" class="page-link">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right">
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                    <polyline points="12 5 19 12 12 19"></polyline>
+                                </svg>
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    }
+</div>
